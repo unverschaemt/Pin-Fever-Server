@@ -1,0 +1,23 @@
+{
+  "name": "Pin-Fever-Server",
+  "version": "1.0.0",
+  "description": "Server for Pinfever",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unverschaemt/Pin-Fever-Server.git"
+  },
+  "author": "Nils Hirsekorn, David Ehlen, Robin Frischmann, Dustin Hoffner",
+  "license": "-",
+  "bugs": {
+    "url": "https://github.com/unverschaemt/Pin-Fever-Server/issues"
+  },
+  "homepage": "https://github.com/unverschaemt/Pin-Fever-Server",
+  "dependencies": {
+    "express": "^4.12.4",
+    "mongoose": "^4.0.3"
+  }
+}
