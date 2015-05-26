@@ -18,6 +18,8 @@
   "homepage": "https://github.com/unverschaemt/Pin-Fever-Server",
   "dependencies": {
     "express": "^4.12.4",
-    "mongoose": "^4.0.3"
+    "jsonwebtoken": "^5.0.1",
+    "mongoose": "^4.0.3",
+    "password-hash": "^1.2.2"
   }
 }
