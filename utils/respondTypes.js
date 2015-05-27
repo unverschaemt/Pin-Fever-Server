@@ -24,7 +24,7 @@ module.exports = function() {
 			publicInfo = publicInfo || null;
 			res.status(401);
 			res.json({
-				err: 'Bad Request!',
+				err: 'Unauthorized!',
 				info: publicInfo
 			});
 		}

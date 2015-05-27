@@ -66,7 +66,7 @@ module.exports = function() {
 					});
 					newplayer.save(function(err, newplayer) {
 						if (err) return res.internalError(err);
-						res.success();
+						res.redirect('/auth/login?email='+req.query.email+'&password='+req.query.password)
 					});
 				} else {
 					res.paramError('Email already registered!', 'Email already registered!');
