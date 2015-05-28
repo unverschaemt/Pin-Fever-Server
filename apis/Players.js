@@ -1,6 +1,9 @@
 var express = require('express');
+var mongoose = require('mongoose');
+
 var playerIdMe = require('../utils/playerIdMe.js');
 var Player = require('../database/models/Player.js');
+var FriendOfPlayer = require('../database/models/FriendOfPlayer.js');
 
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
@@ -64,6 +67,115 @@ module.exports = function() {
 				});
 			}).select('avatarImageUrl displayName email level _id');
 		}
+	});
+
+	app.post('/players/me/addfriend/:playerId', jsonParser, function(req, res) {
+		if (req.params != null && req.params.playerId != null) {
+			var language = req.query.language || 'EN';
+			FriendOfPlayer.findOne(function(err, friend) {
+				if (err) {
+					console.log('err', err);
+					return res.internalError('Database error!');
+				}
+				if (friend) {
+					return res.paramError('Already a friend!', 'Already a friend!');
+				}
+				var newfriend = new FriendOfPlayer({
+					playerId: req.auth._id,
+					friendId: req.params.playerId
+				});
+				newfriend.save(function(err, newfriend) {
+					if (err) return res.internalError(err);
+					res.success();
+				});
+
+			}).or([{
+				playerId: mongoose.Types.ObjectId(req.auth._id),
+				friendId: mongoose.Types.ObjectId(req.params.playerId)
+			}, {
+				friendId: mongoose.Types.ObjectId(req.auth._id),
+				playerId: mongoose.Types.ObjectId(req.params.playerId)
+			}]);
+		}
+	});
+
+	app.post('/players/me/removefriend/:playerId', jsonParser, function(req, res) {
+		if (req.params != null && req.params.playerId != null) {
+			var language = req.query.language || 'EN';
+			FriendOfPlayer.find().or([{
+				playerId: mongoose.Types.ObjectId(req.auth._id),
+				friendId: mongoose.Types.ObjectId(req.params.playerId)
+			}, {
+				friendId: mongoose.Types.ObjectId(req.auth._id),
+				playerId: mongoose.Types.ObjectId(req.params.playerId)
+			}]).remove(function(err, friends) {
+				if (err) {
+					console.log('err', err);
+					return res.internalError('Database error!');
+				}
+				res.success();
+			});
+		}
+	});
+
+	app.get('/players/me/friends', function(req, res) {
+		var language = req.query.language || 'EN';
+		/*FriendOfPlayer.find(function(err, friends) {
+			if (err) {
+				console.log('err', err);
+				return res.internalError('Database error!');
+			}
+			res.success({
+				friends: friends
+			});
+		}).or([{
+			playerId: mongoose.Types.ObjectId(req.auth._id)
+		}, {
+			friendId: mongoose.Types.ObjectId(req.auth._id)
+		}]).populate('playerId', 'avatarImageUrl displayName email level _id').populate('friendId', 'avatarImageUrl displayName email level _id');
+		*/
+		var k = 2;
+		var arr = [];
+		var done = function(friends) {
+			k--;
+			arr.push(friends);
+			if (k < 1) {
+				var out = [];
+				for (var i in arr) {
+					for (var j in arr[i]) {
+						if (typeof arr[i][j].friendId === 'object') {
+							out.push(arr[i][j].friendId);
+						}
+						if (typeof arr[i][j].playerId === 'object') {
+							out.push(arr[i][j].playerId);
+						}
+					}
+				}
+				res.success({
+					friends: out
+				});
+			}
+		}
+
+		FriendOfPlayer.find(function(err, friends) {
+			if (err) {
+				console.log('err', err);
+				return res.internalError('Database error!');
+			}
+			done(friends);
+		}).where({
+			playerId: mongoose.Types.ObjectId(req.auth._id)
+		}).select('friendId').populate('friendId', 'avatarImageUrl displayName email level _id');
+
+		FriendOfPlayer.find(function(err, friends) {
+			if (err) {
+				console.log('err', err);
+				return res.internalError('Database error!');
+			}
+			done(friends);
+		}).where({
+			friendId: mongoose.Types.ObjectId(req.auth._id)
+		}).select('playerId').populate('playerId', 'avatarImageUrl displayName email level _id');
 	});
 
 	return app;

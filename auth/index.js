@@ -63,7 +63,10 @@ module.exports = function() {
 			Player.findOne({
 				email: req.body.email
 			}, function(err, player) {
-				if (err || !player) {
+				if (err){
+					return res.internalError('Database error!');
+				}
+				if (!player) {
 					var hashedPassword = passwordHash.generate(req.body.password);
 					var newplayer = new Player({
 						displayName: req.body.displayName,
