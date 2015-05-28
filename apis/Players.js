@@ -66,6 +66,8 @@ module.exports = function() {
 					});
 				});
 			}).select('avatarImageUrl displayName email level _id');
+		} else {
+			res.paramError('invalid params', 'no param');
 		}
 	});
 
@@ -96,6 +98,8 @@ module.exports = function() {
 				friendId: mongoose.Types.ObjectId(req.auth._id),
 				playerId: mongoose.Types.ObjectId(req.params.playerId)
 			}]);
+		} else {
+			res.paramError('invalid params', 'no param');
 		}
 	});
 
@@ -115,25 +119,14 @@ module.exports = function() {
 				}
 				res.success();
 			});
+		} else {
+			res.paramError('invalid params', 'no param');
 		}
 	});
 
 	app.get('/players/me/friends', function(req, res) {
 		var language = req.query.language || 'EN';
-		/*FriendOfPlayer.find(function(err, friends) {
-			if (err) {
-				console.log('err', err);
-				return res.internalError('Database error!');
-			}
-			res.success({
-				friends: friends
-			});
-		}).or([{
-			playerId: mongoose.Types.ObjectId(req.auth._id)
-		}, {
-			friendId: mongoose.Types.ObjectId(req.auth._id)
-		}]).populate('playerId', 'avatarImageUrl displayName email level _id').populate('friendId', 'avatarImageUrl displayName email level _id');
-		*/
+
 		var k = 2;
 		var arr = [];
 		var done = function(friends) {
@@ -176,6 +169,31 @@ module.exports = function() {
 		}).where({
 			friendId: mongoose.Types.ObjectId(req.auth._id)
 		}).select('playerId').populate('playerId', 'avatarImageUrl displayName email level _id');
+	});
+
+	app.get('/players/search/:key', function(req, res) {
+		if (req.params != null && req.params.key) {
+			var limit = req.query.limit || 10;
+			try {
+				Player.find(function(err, players) {
+					if (err) {
+						console.log('err', err);
+						return res.internalError('Database error!');
+					}
+					res.success({
+						players: players
+					});
+				}).or([{
+					email: new RegExp(req.params.key, "i")
+				}, {
+					displayName: new RegExp(req.params.key, "i")
+				}]).select('avatarImageUrl displayName email level _id').limit(limit);
+			} catch (e) {
+				res.paramError('Invalid Search Key!', 'Invalid Search Key!');
+			}
+		} else {
+			res.paramError('invalid params', 'no param');
+		}
 	});
 
 	return app;
