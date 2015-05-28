@@ -21,6 +21,8 @@ app.use(auth());
 
 app.use(Players());
 
-app.use(function(req, res, next){
-	res.success({err: null, auth: req.auth});
+app.use(function(req, res, next) {
+	res.notFoundError({
+		auth: req.auth
+	});
 })

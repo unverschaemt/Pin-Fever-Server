@@ -38,6 +38,17 @@ module.exports = function() {
 				});
 			}
 		}
+		res.notFoundError = function(info, publicInfo) {
+			if (req.needToRespond) {
+				req.needToRespond = false;
+				publicInfo = publicInfo || null;
+				res.status(404);
+				res.json({
+					err: 'Endpoint Not Found! Invalid Route!',
+					info: publicInfo
+				});
+			}
+		}
 		res.success = function(data) {
 			if (req.needToRespond) {
 				req.needToRespond = false;
