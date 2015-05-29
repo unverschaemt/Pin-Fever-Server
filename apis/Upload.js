@@ -14,6 +14,7 @@ module.exports = function() {
 
 	app.use(function(req, res, next){
 		console.log('Upload header', req.headers);
+		next();
 	});
 
 	/*app.use(function(req, res, next) {
