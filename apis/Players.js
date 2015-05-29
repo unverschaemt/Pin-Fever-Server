@@ -1,9 +1,12 @@
 var express = require('express');
 var mongoose = require('mongoose');
+var multer = require('multer');
+var fs = require('fs');
 
 var playerIdMe = require('../utils/playerIdMe.js');
 var Player = require('../database/models/Player.js');
 var FriendOfPlayer = require('../database/models/FriendOfPlayer.js');
+var Upload = require('./Upload.js');
 
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
@@ -13,11 +16,51 @@ module.exports = function() {
 
 	app.use(function(req, res, next) {
 		if (req.auth == null || req.auth._id == null || req.auth.login !== true) {
+			/*req.auth = {};
+			req.auth._id = "MyTestId";
+			next();*/
 			res.unauthorizedError('Login needed for this section!');
 		} else {
 			next();
 		}
 	});
+
+	app.use('/players/me/avatarupload', Upload());
+
+	app.get('/players/:playerId/img.jpeg', function(req, res) {
+		if (req.params != null && req.params.playerId != null) {
+			req.params.playerId = playerIdMe(req, req.params.playerId);
+			fs.readFile('./uploads/' + req.params.playerId + '.jpeg', function(err, data) {
+				if (err) {
+					return fs.readFile('./uploads/' + req.params.playerId + '.jpg', function(err, data) {
+						if (err) {
+							return fs.readFile('./uploads/defaultAvatar.jpeg', function(err, data) {
+								if (err) {
+									res.writeHead(404);
+									return res.end("File not found.");
+								}
+								res.setHeader("Content-Type", "image/jpeg");
+								res.writeHead(200);
+								res.end(data);
+							});
+						}
+						res.setHeader("Content-Type", "image/jpeg");
+						res.writeHead(200);
+						res.end(data);
+					});
+				}
+				res.setHeader("Content-Type", "image/jpeg");
+				res.writeHead(200);
+				res.end(data);
+			});
+		} else {
+			res.paramError('invalid params', 'no param');
+		}
+	});
+
+	/*app.get('/players/test', function(req, res) {
+		res.send('<form action="/players/me/avatarupload" method="post" enctype="multipart/form-data"><input name="Datei" type="file" size="50" accept="image/jpeg"><input type="submit"></form>');
+	});*/
 
 	app.get('/players/:playerId', function(req, res) {
 		if (req.params != null && req.query != null && req.params.playerId != null) {
@@ -33,6 +76,8 @@ module.exports = function() {
 					player: player
 				});
 			}).select('avatarImageUrl displayName email level _id');
+		} else {
+			res.paramError('invalid params', 'no param');
 		}
 	});
 
