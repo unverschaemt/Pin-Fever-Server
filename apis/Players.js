@@ -16,12 +16,12 @@ module.exports = function() {
 
 	app.use(function(req, res, next) {
 		if (req.auth == null || req.auth._id == null || req.auth.login !== true) {
-			/*if (req.auth == null) {
+			if (req.auth == null) {
 				req.auth = {};
 				req.auth._id = "MyTestId";
 			}
-			next();*/
-			res.unauthorizedError('Login needed for this section!');
+			next();
+			//res.unauthorizedError('Login needed for this section!');
 		} else {
 			next();
 		}
@@ -34,17 +34,9 @@ module.exports = function() {
 			req.params.playerId = playerIdMe(req, req.params.playerId);
 			fs.readFile('./uploads/' + req.params.playerId + '.jpeg', function(err, data) {
 				if (err) {
-					return fs.readFile('./uploads/' + req.params.playerId + '.jpg', function(err, data) {
+					return fs.readFile('./uploads/defaultAvatar.jpeg', function(err, data) {
 						if (err) {
-							return fs.readFile('./uploads/defaultAvatar.jpeg', function(err, data) {
-								if (err) {
-									res.writeHead(404);
-									return res.end("File not found.");
-								}
-								res.setHeader("Content-Type", "image/jpeg");
-								res.writeHead(200);
-								res.end(data);
-							});
+							return res.notFoundError("File not found.", "File not found.");
 						}
 						res.setHeader("Content-Type", "image/jpeg");
 						res.writeHead(200);
