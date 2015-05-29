@@ -34,7 +34,8 @@ module.exports = function() {
 	app.use(multer({
 		dest: './uploads/',
 		onFileUploadStart: function(file, req, res) {
-			console.log('started upload');
+			console.log('started upload', 'mimetype:', file.mimetype);
+			console.log('FILEDATA:', file)
 			if (file.mimetype !== 'image/jpeg') {
 				return false;
 			} else {
