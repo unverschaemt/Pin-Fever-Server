@@ -16,12 +16,12 @@ module.exports = function() {
 
 	app.use(function(req, res, next) {
 		if (req.auth == null || req.auth._id == null || req.auth.login !== true) {
-			if (req.auth == null) {
+			/*if (req.auth == null) {
 				req.auth = {};
 				req.auth._id = "MyTestId";
 			}
-			next();
-			//res.unauthorizedError('Login needed for this section!');
+			next();*/
+			res.unauthorizedError('Login needed for this section!');
 		} else {
 			next();
 		}
