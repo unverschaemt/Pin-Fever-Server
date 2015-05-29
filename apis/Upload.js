@@ -12,10 +12,10 @@ var jsonParser = bodyParser.json();
 module.exports = function() {
 	var app = express();
 
-	app.use(function(req, res, next){
+	/*app.use(function(req, res, next){
 		console.log('Upload header', req.headers);
 		next();
-	});
+	});*/
 
 	/*app.use(function(req, res, next) {
 		if (req.auth == null || req.auth._id == null || req.auth.login !== true) {
@@ -26,7 +26,7 @@ module.exports = function() {
 	});*/
 
 	app.use(function(req, res, next) {
-		req.multerErrors = 0;
+		req.multerErrors = [];
 		req.accepts('*');
 		next();
 	});
@@ -34,24 +34,27 @@ module.exports = function() {
 	app.use(multer({
 		dest: './uploads/',
 		onFileUploadStart: function(file, req, res) {
-			console.log('started upload', 'mimetype:', file.mimetype);
-			console.log('FILEDATA:', file)
 			if (file.mimetype !== 'image/jpeg') {
+				req.multerErrors.push({
+					'Multer:onFileUploadStart': 'Invalid mimetype!',
+					'req.headers': req.headers,
+					'file': file
+				});
 				return false;
 			} else {
 				return true;
 			}
 		},
 		onFileUploadComplete: function(file, req, res) {
-			console.log('upload completed');
 			req.multerUpload = true;
 
 		},
 		onError: function(err, req, res) {
-			console.log('headers', req.headers);
-			console.log('multerError', err);
 			req.multerUpload = true;
-			req.multerErrors++;
+			req.multerErrors.push({
+				'Multer:onError': err,
+				'req.headers': req.headers
+			});
 		},
 		rename: function(fieldname, filename, req, res) {
 			return req.auth._id;
@@ -59,9 +62,10 @@ module.exports = function() {
 	}));
 
 	app.post('/', function(req, res) {
-		if (req.multerUpload && req.multerErrors < 1) {
+		if (req.multerUpload && req.multerErrors.length < 1) {
 			res.success();
 		} else {
+			console.error('Upload failed!', req.multerErrors);
 			res.internalError('Upload failed!', 'Upload failed!');
 		}
 	});
