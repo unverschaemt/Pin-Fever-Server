@@ -12,6 +12,10 @@ var jsonParser = bodyParser.json();
 module.exports = function() {
 	var app = express();
 
+	app.use(function(req, res, next){
+		console.log('Upload header', req.headers);
+	});
+
 	/*app.use(function(req, res, next) {
 		if (req.auth == null || req.auth._id == null || req.auth.login !== true) {
 			res.unauthorizedError('Login needed for this section!');
@@ -29,6 +33,7 @@ module.exports = function() {
 	app.use(multer({
 		dest: './uploads/',
 		onFileUploadStart: function(file, req, res) {
+			console.log('started upload');
 			if (file.mimetype !== 'image/jpeg') {
 				return false;
 			} else {
@@ -49,7 +54,7 @@ module.exports = function() {
 	}));
 
 	app.post('/', function(req, res) {
-		if (req.multerErrors < 1) {
+		if (req.multerUpload && req.multerErrors < 1) {
 			res.success();
 		} else {
 			res.internalError('Upload failed!');
