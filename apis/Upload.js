@@ -12,10 +12,10 @@ var jsonParser = bodyParser.json();
 module.exports = function() {
 	var app = express();
 
-	/*app.use(function(req, res, next){
+	app.use(function(req, res, next){
 		console.log('Upload header', req.headers);
 		next();
-	});*/
+	});
 
 	/*app.use(function(req, res, next) {
 		if (req.auth == null || req.auth._id == null || req.auth.login !== true) {
