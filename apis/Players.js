@@ -53,7 +53,7 @@ module.exports = function() {
 	});
 
 	app.get('/players/test', function(req, res) {
-		res.send('<form action="/players/me/avatarupload" method="post" enctype="multipart/form-data"><input name="Datei" type="file" size="50" accept="image/jpeg"><input type="submit"></form>');
+		res.send('<script src="http://cdn.rawgit.com/bauhausjs/bauhausjs/master/files/client/files/cropImages.js"></script><form action="/players/me/avatarupload" method="post" enctype="multipart/form-data"><input name="Datei" type="file" size="50" accept="image/jpeg"><input type="submit"></form>');
 	});
 
 	app.get('/players/:playerId', function(req, res) {

@@ -34,7 +34,7 @@ module.exports = function() {
 	app.use(multer({
 		dest: './uploads/',
 		onFileUploadStart: function(file, req, res) {
-			//console.log('started upload');
+			console.log('started upload');
 			if (file.mimetype !== 'image/jpeg') {
 				return false;
 			} else {
@@ -42,10 +42,13 @@ module.exports = function() {
 			}
 		},
 		onFileUploadComplete: function(file, req, res) {
+			console.log('upload completed');
 			req.multerUpload = true;
 
 		},
 		onError: function(err, req, res) {
+			console.log('headers', req.headers);
+			console.log('multerError', err);
 			req.multerUpload = true;
 			req.multerErrors++;
 		},
@@ -58,7 +61,7 @@ module.exports = function() {
 		if (req.multerUpload && req.multerErrors < 1) {
 			res.success();
 		} else {
-			res.internalError('Upload failed!');
+			res.internalError('Upload failed!', 'Upload failed!');
 		}
 	});
 
