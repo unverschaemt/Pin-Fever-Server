@@ -11,7 +11,7 @@ var Upload = require('./Upload.js');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
-var playerSelect = 'displayName level _id';
+var querySelects = require('../config/querySelects.js');
 
 module.exports = function() {
 	var app = express();
@@ -60,9 +60,9 @@ module.exports = function() {
 
 	app.get('/:playerId', function(req, res) {
 		if (req.params != null && req.query != null && req.params.playerId != null) {
-			var select = playerSelect;
+			var select = querySelects.publicPlayer;
 			if(req.params.playerId === 'me'){
-				select += ' email';
+				select = querySelects.privatePlayer;
 			}
 			req.params.playerId = playerIdMe(req, req.params.playerId);
 			var language = req.query.language || 'EN';
@@ -101,7 +101,7 @@ module.exports = function() {
 						player: newplayer
 					});
 				});
-			}).select(playerSelect);
+			}).select(querySelects.publicPlayer);
 		} else {
 			res.paramError('invalid params', 'no param');
 		}
@@ -194,7 +194,7 @@ module.exports = function() {
 			done(friends);
 		}).where({
 			playerId: mongoose.Types.ObjectId(req.auth._id)
-		}).select('friendId').populate('friendId', playerSelect);
+		}).select('friendId').populate('friendId', querySelects.publicPlayer);
 
 		FriendOfPlayer.find(function(err, friends) {
 			if (err) {
@@ -204,7 +204,7 @@ module.exports = function() {
 			done(friends);
 		}).where({
 			friendId: mongoose.Types.ObjectId(req.auth._id)
-		}).select('playerId').populate('playerId', playerSelect);
+		}).select('playerId').populate('playerId', querySelects.publicPlayer);
 	});
 
 	app.get('/search/:key', function(req, res) {
@@ -223,7 +223,7 @@ module.exports = function() {
 					email: new RegExp(req.params.key, "i")
 				}, {
 					displayName: new RegExp(req.params.key, "i")
-				}]).select(playerSelect).limit(limit);
+				}]).select(querySelects.publicPlayer).limit(limit);
 			} catch (e) {
 				res.paramError('Invalid Search Key!', 'Invalid Search Key!');
 			}
