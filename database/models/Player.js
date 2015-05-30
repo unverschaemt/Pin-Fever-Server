@@ -3,7 +3,6 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var fileSchema = new Schema({
-	avatarImageUrl: String,
 	displayName: String,
 	password: String,
 	email: String,

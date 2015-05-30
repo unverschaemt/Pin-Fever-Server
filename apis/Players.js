@@ -11,6 +11,8 @@ var Upload = require('./Upload.js');
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
 
+var playerSelect = 'displayName level _id';
+
 module.exports = function() {
 	var app = express();
 
@@ -58,6 +60,10 @@ module.exports = function() {
 
 	app.get('/players/:playerId', function(req, res) {
 		if (req.params != null && req.query != null && req.params.playerId != null) {
+			var select = playerSelect;
+			if(req.params.playerId === 'me'){
+				select += ' email';
+			}
 			req.params.playerId = playerIdMe(req, req.params.playerId);
 			var language = req.query.language || 'EN';
 			Player.findOne({
@@ -69,7 +75,7 @@ module.exports = function() {
 				res.success({
 					player: player
 				});
-			}).select('avatarImageUrl displayName email level _id');
+			}).select(select);
 		} else {
 			res.paramError('invalid params', 'no param');
 		}
@@ -94,7 +100,7 @@ module.exports = function() {
 					return res.internalError('Database error or user not found!');
 				}
 				for (var i in req.body) {
-					if (['avatarImageUrl', 'displayName'].indexOf(i) >= 0) {
+					if (['displayName'].indexOf(i) >= 0) {
 						player[i] = req.body[i];
 					}
 				}
@@ -104,7 +110,7 @@ module.exports = function() {
 						player: newplayer
 					});
 				});
-			}).select('avatarImageUrl displayName email level _id');
+			}).select(playerSelect);
 		} else {
 			res.paramError('invalid params', 'no param');
 		}
@@ -197,7 +203,7 @@ module.exports = function() {
 			done(friends);
 		}).where({
 			playerId: mongoose.Types.ObjectId(req.auth._id)
-		}).select('friendId').populate('friendId', 'avatarImageUrl displayName email level _id');
+		}).select('friendId').populate('friendId', playerSelect);
 
 		FriendOfPlayer.find(function(err, friends) {
 			if (err) {
@@ -207,7 +213,7 @@ module.exports = function() {
 			done(friends);
 		}).where({
 			friendId: mongoose.Types.ObjectId(req.auth._id)
-		}).select('playerId').populate('playerId', 'avatarImageUrl displayName email level _id');
+		}).select('playerId').populate('playerId', playerSelect);
 	});
 
 	app.get('/players/search/:key', function(req, res) {
@@ -226,7 +232,7 @@ module.exports = function() {
 					email: new RegExp(req.params.key, "i")
 				}, {
 					displayName: new RegExp(req.params.key, "i")
-				}]).select('avatarImageUrl displayName email level _id').limit(limit);
+				}]).select(playerSelect).limit(limit);
 			} catch (e) {
 				res.paramError('Invalid Search Key!', 'Invalid Search Key!');
 			}
