@@ -87,7 +87,7 @@ module.exports = function() {
 			if (checkLevel && checkMode && checkState && checkExpired) {
 				openGame.participants.push(req.auth._id);
 				if (openGame.participants.length === openGame.numberOfPlayers) {
-					createMatch(openGame.participants, openGame.initialData, openGame.mode, function(err, match){
+					return createMatch(openGame.participants, openGame.initialData, openGame.mode, function(err, match){
 						if(err){
 							return res.internalError('Database fail!');
 						}
