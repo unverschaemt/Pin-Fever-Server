@@ -21,7 +21,6 @@ var loginUser = function(email, password, res) {
 				var token = jwt.sign({
 					email: player.email,
 					displayName: player.displayName,
-					avatarURL: player.avatarURL,
 					_id: player._id,
 					login: true
 				}, secret);
