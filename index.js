@@ -6,6 +6,7 @@ var authMiddleware = require('./auth/middleware.js');
 
 var respondTypes = require('./utils/respondTypes.js');
 var Players = require('./apis/Players.js');
+var TurnBasedMatches = require('./apis/TurnBasedMatches.js');
 
 var app = express();
 
@@ -25,6 +26,8 @@ app.use(authMiddleware());
 app.use('/auth', auth());
 
 app.use('/players', Players());
+
+app.use('/turnbasedmatches', TurnBasedMatches());
 
 app.use(function(req, res, next) {
 	res.notFoundError({
