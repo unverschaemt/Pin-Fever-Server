@@ -41,8 +41,8 @@ module.exports = function() {
 		if (req.body == null) {
 			res.paramError('invalid params', 'no param');
 		}
-		var number = parseInt(req.body.number) || 2;
-		var minLevel = parseInt(req.body.minlevel) || 0;
+		var numberOfPlayers = parseInt(req.body.numberOfPlayers) || 2;
+		var minLevel = parseInt(req.body.minLevel) || 0;
 		var mode = req.body.mode || 'default';
 		var rounds = parseInt(req.body.rounds) || 3;
 
@@ -54,7 +54,7 @@ module.exports = function() {
 			var checkExpired = Date.now() - autoGames[req.params.id].created <= expiredMillis;
 			if (checkLevel && checkMode && checkState && checkExpired) {
 				openGame.participants.push(req.auth._id);
-				if (openGame.participants.length === openGame.number) {
+				if (openGame.participants.length === openGame.numberOfPlayers) {
 					openGame.state = 'WAIT_FOR_START';
 					// TODO: CREATE A NEW GAME AND START THE GAME
 				}
@@ -74,7 +74,7 @@ module.exports = function() {
 			mode: mode,
 			gameId: null,
 			participants: [req.auth._id],
-			number: number,
+			numberOfPlayers: numberOfPlayers,
 			minLevel: minLevel,
 			rounds: rounds,
 			created: Date.now()
