@@ -81,15 +81,6 @@ module.exports = function() {
 		}
 	});
 
-	app.get('/me/players/:collection', function(req, res) {
-		if (req.params != null && req.query != null && req.params.collection != null) {
-			var language = req.query.language || 'EN';
-			var maxResults = req.query.maxResults || 10;
-			var pageToken = req.query.pageToken || '';
-			res.internalError('Not implemented!', 'Not implemented!');
-		}
-	});
-
 	app.post('/me/set', jsonParser, function(req, res) {
 		if (req.body != null) {
 			var language = req.query.language || 'EN';
