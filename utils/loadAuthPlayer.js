@@ -1,5 +1,7 @@
 var express = require('express');
 
+var Player = require('../database/models/Player.js');
+
 module.exports = function() {
 	var app = express();
 

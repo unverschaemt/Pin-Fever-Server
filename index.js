@@ -27,7 +27,7 @@ app.use('/auth', auth());
 
 app.use('/players', Players());
 
-app.use('/turnbasedmatches', TurnBasedMatches());
+app.use('/turnbasedmatch', TurnBasedMatches());
 
 app.use(function(req, res, next) {
 	res.notFoundError({
