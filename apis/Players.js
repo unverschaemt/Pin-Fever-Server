@@ -29,9 +29,9 @@ module.exports = function() {
 		}
 	});
 
-	app.use('/players/me/avatarupload', Upload());
+	app.use('/me/avatarupload', Upload());
 
-	app.get('/players/:playerId/img.jpeg', function(req, res) {
+	app.get('/:playerId/img.jpeg', function(req, res) {
 		if (req.params != null && req.params.playerId != null) {
 			req.params.playerId = playerIdMe(req, req.params.playerId);
 			fs.readFile('./uploads/' + req.params.playerId + '.jpeg', function(err, data) {
@@ -54,11 +54,11 @@ module.exports = function() {
 		}
 	});
 
-	/*app.get('/players/test', function(req, res) {
+	/*app.get('/test', function(req, res) {
 		res.send('<script src="http://cdn.rawgit.com/bauhausjs/bauhausjs/master/files/client/files/cropImages.js"></script><form action="/players/me/avatarupload" method="post" enctype="multipart/form-data"><input name="Datei" type="file" size="50" accept="image/jpeg"><input type="submit"></form>');
 	});*/
 
-	app.get('/players/:playerId', function(req, res) {
+	app.get('/:playerId', function(req, res) {
 		if (req.params != null && req.query != null && req.params.playerId != null) {
 			var select = playerSelect;
 			if(req.params.playerId === 'me'){
@@ -81,7 +81,7 @@ module.exports = function() {
 		}
 	});
 
-	app.get('/players/me/players/:collection', function(req, res) {
+	app.get('/me/players/:collection', function(req, res) {
 		if (req.params != null && req.query != null && req.params.collection != null) {
 			var language = req.query.language || 'EN';
 			var maxResults = req.query.maxResults || 10;
@@ -90,7 +90,7 @@ module.exports = function() {
 		}
 	});
 
-	app.post('/players/me/set', jsonParser, function(req, res) {
+	app.post('/me/set', jsonParser, function(req, res) {
 		if (req.body != null) {
 			var language = req.query.language || 'EN';
 			Player.findOne({
@@ -116,7 +116,7 @@ module.exports = function() {
 		}
 	});
 
-	app.post('/players/me/addfriend/:playerId', jsonParser, function(req, res) {
+	app.post('/me/addfriend/:playerId', jsonParser, function(req, res) {
 		if (req.params != null && req.params.playerId != null) {
 			var language = req.query.language || 'EN';
 			FriendOfPlayer.findOne(function(err, friend) {
@@ -148,7 +148,7 @@ module.exports = function() {
 		}
 	});
 
-	app.post('/players/me/removefriend/:playerId', jsonParser, function(req, res) {
+	app.post('/me/removefriend/:playerId', jsonParser, function(req, res) {
 		if (req.params != null && req.params.playerId != null) {
 			var language = req.query.language || 'EN';
 			FriendOfPlayer.find().or([{
@@ -169,7 +169,7 @@ module.exports = function() {
 		}
 	});
 
-	app.get('/players/me/friends', function(req, res) {
+	app.get('/me/friends', function(req, res) {
 		var language = req.query.language || 'EN';
 
 		var k = 2;
@@ -216,7 +216,7 @@ module.exports = function() {
 		}).select('playerId').populate('playerId', playerSelect);
 	});
 
-	app.get('/players/search/:key', function(req, res) {
+	app.get('/search/:key', function(req, res) {
 		if (req.params != null && req.params.key) {
 			var limit = req.query.limit || 10;
 			try {

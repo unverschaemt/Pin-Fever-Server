@@ -7,7 +7,8 @@ var jsonParser = bodyParser.json();
 
 var Player = require('../database/models/Player.js');
 
-var secret = 'ThisIsAnotSecretKeyWhichShouldGetReplaced';
+//var secret = 'ThisIsAnotSecretKeyWhichShouldGetReplaced';
+var secret = require('./secret.js');
 
 var loginUser = function(email, password, res) {
 	Player.findOne({
@@ -37,20 +38,7 @@ var loginUser = function(email, password, res) {
 module.exports = function() {
 	var app = express();
 
-	app.use(function(req, res, next) {
-		if (req.headers != null && req.headers['api-auth-token'] != null && typeof req.headers['api-auth-token'] === 'string' && req.headers['api-auth-token'].length > 0) {
-			jwt.verify(req.headers['api-auth-token'], secret, function(err, decoded) {
-				if (err == null) {
-					req.auth = decoded;
-				}
-				next();
-			});
-		} else {
-			next();
-		}
-	});
-
-	app.post('/auth/login', jsonParser, function(req, res, next) {
+	app.post('/login', jsonParser, function(req, res, next) {
 		if (req.body != null && req.body.email != null && req.body.password != null) {
 			loginUser(req.body.email, req.body.password, res);
 		} else {
@@ -58,12 +46,12 @@ module.exports = function() {
 		}
 	});
 
-	app.post('/auth/register', jsonParser, function(req, res, next) {
+	app.post('/register', jsonParser, function(req, res, next) {
 		if (req.body != null && req.body.email != null && req.body.displayName && req.body.password) {
 			Player.findOne({
 				email: req.body.email
 			}, function(err, player) {
-				if (err){
+				if (err) {
 					return res.internalError('Database error!');
 				}
 				if (!player) {
@@ -85,8 +73,6 @@ module.exports = function() {
 			res.paramError('invalid params', 'no param');
 		}
 	});
-
-
 
 	return app;
 };

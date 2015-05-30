@@ -1,6 +1,9 @@
 var express = require('express');
 var mongoose = require('mongoose');
+
 var auth = require('./auth/index.js');
+var authMiddleware = require('./auth/middleware.js');
+
 var respondTypes = require('./utils/respondTypes.js');
 var Players = require('./apis/Players.js');
 
@@ -17,9 +20,11 @@ app.listen(port, function() {
 
 app.use(respondTypes());
 
-app.use(auth());
+app.use(authMiddleware());
 
-app.use(Players());
+app.use('/auth', auth());
+
+app.use('/players', Players());
 
 app.use(function(req, res, next) {
 	res.notFoundError({
