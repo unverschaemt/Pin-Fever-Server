@@ -44,6 +44,7 @@ module.exports = function() {
 		var number = parseInt(req.body.number) || 2;
 		var minLevel = parseInt(req.body.minlevel) || 0;
 		var mode = req.body.mode || 'default';
+		var rounds = parseInt(req.body.rounds) || 3;
 
 		for (var i in autoGames) {
 			var openGame = autoGames[i];
@@ -75,6 +76,7 @@ module.exports = function() {
 			participants: [req.auth._id],
 			number: number,
 			minLevel: minLevel,
+			rounds: rounds,
 			created: Date.now()
 		};
 		res.success({
