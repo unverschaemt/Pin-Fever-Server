@@ -78,13 +78,19 @@ module.exports = function() {
 					match.data = req.body.gamedata;
 				}
 				if (req.body.participants && typeof req.body.participants === 'object') {
+					var validParticipants = true;
 					if (match.participants.length === req.body.participants.length) {
 						for (var i in match.participants) {
-							if (req.body.participants.indexOf(match.participants[i]) >= 0) {
-								
+							if (req.body.participants.indexOf(match.participants[i]) < 0) {
+								validParticipants = false;
 							}
 						}
 						match.participants = req.body.participants;
+					} else {
+						validParticipants = false;
+					}
+					if (!validParticipants) {
+						return res.paramError('Invalid participants array!', 'Invalid participants array!');
 					}
 				}
 				if (req.body.matchfinished) {
