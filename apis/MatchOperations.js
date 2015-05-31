@@ -49,19 +49,27 @@ module.exports = function() {
 		}
 		req.body.gamedata = req.body.gamedata || false;
 		req.body.participants = req.body.participants || false;
-		var turn = new Turn({
-			_player: req.auth._id,
-			data: req.body.turndata
+		req.body.matchcomplete = req.body.matchcomplete === true;
+
+		var query = TurnBasedMatch.findOne();
+		query.where({
+			_id: mongoose.Types.ObjectId(req.params.matchId)
 		});
-		turn.save(function(err, turn) {
+		query.exec(function(err, match) {
 			if (err) {
 				return res.internalError('Database error!');
 			}
-			var query = TurnBasedMatch.findOne();
-			query.where({
-				_id: mongoose.Types.ObjectId(req.params.matchId)
+			if (match.status !== 'MATCH_ACTIVE') {
+				return res.paramError('Game not active!', 'Match not active!');
+			}
+			if (match.participants[match.turns.length % match.participants.length] != null || match.participants[match.turns.length % match.participants.length].toString() !== req.auth._id) {
+				return res.paramError('Not your Turn!', 'Not your Turn!');
+			}
+			var turn = new Turn({
+				_player: req.auth._id,
+				data: req.body.turndata
 			});
-			query.exec(function(err, match) {
+			turn.save(function(err, turn) {
 				if (err) {
 					return res.internalError('Database error!');
 				}
@@ -70,9 +78,19 @@ module.exports = function() {
 					match.data = req.body.gamedata;
 				}
 				if (req.body.participants && typeof req.body.participants === 'object') {
-					match.participants = req.body.participants;
+					if (match.participants.length === req.body.participants.length) {
+						for (var i in match.participants) {
+							if (req.body.participants.indexOf(match.participants[i]) >= 0) {
+								
+							}
+						}
+						match.participants = req.body.participants;
+					}
 				}
-				turn.save(function(err, match) {
+				if (req.body.matchfinished) {
+					match.status = 'MATCH_COMPLETE';
+				}
+				match.save(function(err, match) {
 					if (err) {
 						return res.internalError('Database error!');
 					}
