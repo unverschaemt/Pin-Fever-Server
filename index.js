@@ -8,6 +8,8 @@ var respondTypes = require('./utils/respondTypes.js');
 var Players = require('./apis/Players.js');
 var TurnBasedMatches = require('./apis/TurnBasedMatches.js');
 
+var Questions = require('./apis/Questions.js');
+
 var app = express();
 
 // Loading Database:
@@ -28,6 +30,8 @@ app.use('/auth', auth());
 app.use('/players', Players());
 
 app.use('/turnbasedmatch', TurnBasedMatches());
+
+app.use('/question', Questions());
 
 app.use(function(req, res, next) {
 	res.notFoundError({
