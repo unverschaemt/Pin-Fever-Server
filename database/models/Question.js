@@ -1,13 +1,28 @@
 var mongoose = require('mongoose');
+var random = require('mongoose-random');
 
 var Schema = mongoose.Schema;
 
-var fileSchema = new Schema({
-    key: String,
-    round: String,
-    participantWhoWonThisRound: String,
-    answer: String,
-    questionState: Number
+var questionSchema = new Schema({
+	question: {
+		type: Schema.ObjectId,
+		ref: 'Text'
+	},
+	answer: {
+		coordinates: Object,
+		text: {
+			type: Schema.ObjectId,
+			ref: 'Text'
+		}
+	},
+	category: {
+		type: Schema.ObjectId,
+		ref: 'Category'
+	}
 });
 
-module.exports = mongoose.model('Question', fileSchema);
+questionSchema.plugin(random, {
+	path: 'r'
+});
+
+module.exports = mongoose.model('Question', questionSchema);

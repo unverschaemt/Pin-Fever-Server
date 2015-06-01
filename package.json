@@ -20,6 +20,7 @@
     "express": "^4.12.4",
     "jsonwebtoken": "^5.0.1",
     "mongoose": "^4.0.3",
+    "mongoose-random": "^0.1.1",
     "multer": "^0.1.8",
     "password-hash": "^1.2.2"
   }
