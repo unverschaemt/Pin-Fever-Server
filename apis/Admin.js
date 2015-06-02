@@ -60,7 +60,7 @@ module.exports = function() {
 		}
 	});
 
-	app.post('/add', jsonParser, function(req, res) {
+	/*app.post('/add', jsonParser, function(req, res) {
 		var out = [];
 		for (var i in mongoose.models) {
 			out.push([mongoose.models[i].modelName, i]);
@@ -72,7 +72,7 @@ module.exports = function() {
 			}
 			res.success(das);
 		});
-	});
+	});*/
 
 	app.post('/addquestion', jsonParser, function(req, res) {
 		req.body.coordinates = req.body.coordinates || {};
@@ -206,7 +206,7 @@ module.exports = function() {
 		})
 	});
 
-	app.post('/addtext', jsonParser, function(req, res) {
+	/*app.post('/settext', jsonParser, function(req, res) {
 		Translation.findOne({
 			_id: req.body.translation
 		}, function(err, translation) {
@@ -237,7 +237,7 @@ module.exports = function() {
 				})
 			});
 		});
-	});
+	});*/
 
 	return app;
 };
