@@ -22,6 +22,11 @@ app.listen(port, function() {
 	console.log("STARTED pinfever SERVER! PORT: ", port);
 });
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
+
 app.use(respondTypes());
 
 app.use(authMiddleware());
