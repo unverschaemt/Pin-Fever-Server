@@ -13,6 +13,37 @@ var jsonParser = bodyParser.json();
 
 var querySelects = require('../config/querySelects.js');
 
+var setTranslationText = function(translationID, languageID, textPARAM, callback) {
+	Translation.findOne({
+		_id: translationID
+	}, function(err, translation) {
+		if (err || !translation) {
+			return callback('failed');
+		}
+		Text.findOne({
+			_translation: translation._id,
+			language: languageID
+		}, function(err, text) {
+			if (err) {
+				return callback('failed');
+			}
+			if (!text) {
+				var text = new Text({
+					_translation: translation._id,
+					language: languageID
+				});
+			}
+			text.content = textPARAM;
+			text.save(function(err, text) {
+				if (err) {
+					return callback('failed');
+				}
+				callback(null, text)
+			})
+		});
+	});
+}
+
 module.exports = function() {
 	var app = express();
 
@@ -78,7 +109,96 @@ module.exports = function() {
 			});
 		});
 	});
-	
+
+	app.post('/setquestiontext/:questionId', jsonParser, function(req, res) {
+		if (req.body.text == null) {
+			return res.paramError('', 'no param');
+		}
+		req.body.language = req.body.language || 'en';
+
+		Question.findOne({
+			_id: req.params.questionId
+		}, function(err, question) {
+			if (err || !question) {
+				return res.paramError('Database error!', 'Question not found!');
+			}
+			setTranslationText(question.question, req.body.language, req.body.text, function(err, text) {
+				if (err || !text) {
+					return res.paramError('Database error!', 'Failed!');
+				}
+				res.success({
+					text: text
+				});
+			});
+		})
+	});
+
+	app.post('/setanswertext/:questionId', jsonParser, function(req, res) {
+		if (req.body.text == null) {
+			return res.paramError('', 'no param');
+		}
+		req.body.language = req.body.language || 'en';
+
+		Question.findOne({
+			_id: req.params.questionId
+		}, function(err, question) {
+			if (err || !question) {
+				return res.paramError('Database error!', 'Question not found!');
+			}
+			setTranslationText(question.answer.text, req.body.language, req.body.text, function(err, text) {
+				if (err || !text) {
+					return res.paramError('Database error!', 'Failed!');
+				}
+				res.success({
+					text: text
+				});
+			});
+		})
+	});
+
+	app.post('/addcategory', jsonParser, function(req, res) {
+		var categoryName = new Translation();
+		categoryName.save(function(err, translation) {
+			if (err || !translation) {
+				return res.internalError('Database error!', 'Database error!');
+			}
+			var category = new Category({
+				name: translation._id
+			})
+			category.save(function(err, category) {
+				if (err || !category) {
+					return res.internalError('Database error!', 'Database error!');
+				}
+				res.success({
+					category: category
+				});
+			});
+		});
+	});
+
+	app.post('/setcategorytext/:categoryId', jsonParser, function(req, res) {
+		if (req.body == null || req.body.text == null) {
+			return res.paramError('no param', 'no param');
+		}
+		req.body.language = req.body.language || 'en';
+
+		Category.findOne({
+			_id: req.params.categoryId
+		}, function(err, category) {
+			if (err || !category) {
+				return res.paramError('Database error!', 'Question not found!');
+			}
+			setTranslationText(category.name, req.body.language, req.body.text, function(err, text) {
+				if (err || !text) {
+					return res.paramError('Database error!', 'Failed!');
+				}
+				res.success({
+					text: text
+				});
+			});
+		})
+	});
+
 	app.post('/addtext', jsonParser, function(req, res) {
 		Translation.findOne({
 			_id: req.body.translation
