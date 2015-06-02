@@ -44,12 +44,14 @@ module.exports = function() {
 	});
 
 	app.post('/:matchId/taketurn', jsonParser, function(req, res, next) {
-		if (req.params == null || req.params.matchId == null || req.body == null || req.body.turndata == null) {
+		if (req.params == null || req.params.matchId == null) {
 			return res.paramError('invalid params', 'no param');
 		}
+		req.body = req.body || {};
 		req.body.gamedata = req.body.gamedata || false;
 		req.body.participants = req.body.participants || false;
 		req.body.matchcomplete = req.body.matchcomplete === true;
+		req.body.turndata = req.body.turndata || {};
 
 		var query = TurnBasedMatch.findOne();
 		query.where({
