@@ -76,8 +76,8 @@ module.exports = function() {
 
 	app.post('/addquestion', jsonParser, function(req, res) {
 		req.body.coordinates = req.body.coordinates || {};
-		if(typeof req.body.coordinates !== 'object' || req.body.coordinates.latitude == null || req.body.coordinates.longitude == null || typeof req.body.coordinates.latitude !== 'number' || typeof req.body.coordinates.longitude !== 'number'){
-			return res.paramError('coordinates must be an object','coordinates must be an object with latitude and longitude');
+		if (typeof req.body.coordinates !== 'object' || req.body.coordinates.latitude == null || req.body.coordinates.longitude == null || typeof req.body.coordinates.latitude !== 'number' || typeof req.body.coordinates.longitude !== 'number') {
+			return res.paramError('coordinates must be an object', 'coordinates must be an object with latitude and longitude');
 		}
 
 		Category.findOne({
@@ -108,7 +108,9 @@ module.exports = function() {
 						if (err) {
 							return res.internalError('Database error!', err);
 						}
-						res.success(question);
+						res.success({
+							question: question
+						});
 					});
 				});
 			});
