@@ -29,20 +29,6 @@ module.exports = function() {
 		}
 	});
 
-	app.post('/add', jsonParser, function(req, res) {
-		var out = [];
-		for (var i in mongoose.models) {
-			out.push([mongoose.models[i].modelName, i]);
-		}
-		var da = new mongoose.models[req.body.model](req.body.data);
-		da.save(function(err, das) {
-			if (err) {
-				return res.internalError('Database error!', err);
-			}
-			res.success(das);
-		});
-	});
-
 	app.get('/randomcategories', function(req, res) {
 		req.query.amount = req.query.amount || 1;
 		var query = Category.findRandom();
@@ -74,33 +60,43 @@ module.exports = function() {
 				return res.internalError('Database error!');
 			}
 			var languageQuery = Text.find();
-			languageQuery.populate('language');
+			//languageQuery.populate('language');
 			var orquery = [];
 			for (var i in questions) {
 				orquery.push({
-					'_language.lkz': req.query.language,
+					language: req.query.language,
 					_translation: mongoose.Types.ObjectId(questions[i].question)
 				});
 				orquery.push({
-					'_language.lkz': req.query.language,
+					language: req.query.language,
 					_translation: mongoose.Types.ObjectId(questions[i].answer.text)
 				});
 			}
 
 			languageQuery.or(orquery);
-			query.exec(function(err, texts) {
+			languageQuery.exec(function(err, texts) {
 				if (err) {
 					return res.internalError('Database error!');
 				}
 				var textsObj = {};
 				for (var i in texts) {
-					textsObj[texts[i]._translation.toString()] = texts[i];
+					textsObj[texts[i]._translation.toString()] = texts[i].content;
 				}
+				var outQuestions = [];
 				for (var i in questions) {
-					questions[i].question = textsObj[questions[i].question.toString()];
+					var outQuestion = {};
+					outQuestion._id = questions[i]._id;
+					outQuestion.category = questions[i].category;
+					outQuestion.answer = {};
+					outQuestion.answer.coordinates = questions[i].answer.coordinates;
+					var qtext = textsObj[questions[i].question.toString()];
+					var atext = textsObj[questions[i].answer.text.toString()];
+					outQuestion.question = qtext;
+					outQuestion.answer.text = atext;
+					outQuestions.push(outQuestion);
 				}
 				res.success({
-					questions: questions
+					questions: outQuestions
 				});
 			});
 		});
