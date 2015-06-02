@@ -21,6 +21,9 @@ var randomcategories = function(req, res) {
 		if (err) {
 			return res.internalError('Database error!');
 		}
+		if (categories.length === 0) {
+			return res.internalError('No categories found!', 'No categories found!');
+		}
 		var languageQuery = Text.find();
 
 		var orquery = [];
