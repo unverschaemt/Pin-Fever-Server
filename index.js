@@ -9,6 +9,7 @@ var Players = require('./apis/Players.js');
 var TurnBasedMatches = require('./apis/TurnBasedMatches.js');
 
 var Questions = require('./apis/Questions.js');
+var Admin = require('./apis/Admin.js');
 
 var app = express();
 
@@ -32,6 +33,8 @@ app.use('/players', Players());
 app.use('/turnbasedmatch', TurnBasedMatches());
 
 app.use('/question', Questions());
+
+app.use('/admin', Admin());
 
 app.use(function(req, res, next) {
 	res.notFoundError({
