@@ -11,4 +11,4 @@ var fileSchema = new Schema({
 	language: String
 });
 
-module.exports = mongoose.model('Game', fileSchema);
+module.exports = mongoose.model('Text', fileSchema);

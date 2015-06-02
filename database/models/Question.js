@@ -6,13 +6,13 @@ var Schema = mongoose.Schema;
 var questionSchema = new Schema({
 	question: {
 		type: Schema.ObjectId,
-		ref: 'Text'
+		ref: 'Translation'
 	},
 	answer: {
 		coordinates: Object,
 		text: {
 			type: Schema.ObjectId,
-			ref: 'Text'
+			ref: 'Translation'
 		}
 	},
 	category: {
