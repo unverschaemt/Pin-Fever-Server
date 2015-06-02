@@ -53,7 +53,6 @@ var randomcategories = function(req, res) {
 				var outCategory = {};
 				outCategory._id = categories[i]._id;
 				var oName = textsObj[categories[i].name.toString()];
-				console.log('oName', oName);
 				outCategory.name = oName;
 				outCategories.push(outCategory);
 			}
