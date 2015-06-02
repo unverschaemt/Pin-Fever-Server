@@ -9,7 +9,10 @@ var questionSchema = new Schema({
 		ref: 'Translation'
 	},
 	answer: {
-		coordinates: Object,
+		coordinates: {
+			latitude: Number,
+			longitude: Number
+		},
 		text: {
 			type: Schema.ObjectId,
 			ref: 'Translation'
