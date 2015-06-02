@@ -8,10 +8,7 @@ var fileSchema = new Schema({
 		ref: 'Translation'
 	},
 	content: String,
-	_language: {
-		type: Schema.ObjectId,
-		ref: 'Language'
-	}
+	language: String
 });
 
 module.exports = mongoose.model('Game', fileSchema);
