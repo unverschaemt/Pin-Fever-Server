@@ -23,8 +23,11 @@ app.listen(port, function() {
 });
 
 app.use(function(req, res, next) {
-	res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	//console.log(req.path, req.headers);
+	res.header('Access-Control-Allow-Origin', "*"); // TODO - Make this more secure!!
+	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST');
+	res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,api-auth-token');
+
 	next();
 });
 
@@ -46,4 +49,4 @@ app.use(function(req, res, next) {
 	res.notFoundError({
 		auth: req.auth
 	});
-})
+});
