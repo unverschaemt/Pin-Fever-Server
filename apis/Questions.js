@@ -203,7 +203,7 @@ module.exports = function() {
 		randomquestions(req, res);
 	});
 
-	app.get('/question/:id', function(req, res) {
+	app.get('/:id', function(req, res) {
 		req.query.language = req.query.language || 'en';
 
 		var query = Question.findOne({
