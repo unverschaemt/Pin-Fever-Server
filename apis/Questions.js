@@ -128,6 +128,50 @@ var randomquestions = function(req, res) {
 	});
 };
 
+var getQuestionTexts = function(question, req, res) {
+	var languageQuery = Text.find();
+	//languageQuery.populate('language');
+	var orquery = [];
+	orquery.push({
+		language: req.query.language,
+		_translation: mongoose.Types.ObjectId(question.question)
+	});
+	orquery.push({
+		language: req.query.language,
+		_translation: mongoose.Types.ObjectId(question.answer.text)
+	});
+
+	languageQuery.or(orquery);
+	languageQuery.exec(function(err, texts) {
+		if (err) {
+			return res.internalError('Database error!');
+		}
+		if (texts.length < orquery.length && req.query.language === 'en') {
+			return res.internalError('Language text not found!', 'Language text not found!');
+		}
+		if (texts.length < orquery.length) {
+			req.query.language = 'en';
+			return randomquestions(req, res);
+		}
+		var textsObj = {};
+		for (var i in texts) {
+			textsObj[texts[i]._translation.toString()] = texts[i].content;
+		}
+		var outQuestion = {};
+		outQuestion._id = question._id;
+		outQuestion.category = question.category;
+		outQuestion.answer = {};
+		outQuestion.answer.coordinates = question.answer.coordinates;
+		var qtext = textsObj[question.question.toString()];
+		var atext = textsObj[question.answer.text.toString()];
+		outQuestion.question = qtext;
+		outQuestion.answer.text = atext;
+		res.success({
+			questions: outQuestions
+		});
+	});
+}
+
 module.exports = function() {
 	var app = express();
 
@@ -157,6 +201,21 @@ module.exports = function() {
 		req.query.category = req.query.category || false;
 
 		randomquestions(req, res);
+	});
+
+	app.get('/question/:id', function(req, res) {
+		req.query.language = req.query.language || 'en';
+
+		var query = Question.findOne({
+			_id: req.params.id
+		});
+
+		query.exec(function(err, question) {
+			if (err) {
+				return res.internalError('Database error!');
+			}
+			getQuestionTexts(question, req, res);
+		});
 	});
 
 	return app;
