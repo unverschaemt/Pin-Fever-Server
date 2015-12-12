@@ -4,6 +4,7 @@ var passwordHash = require('password-hash');
 
 var bodyParser = require('body-parser');
 var jsonParser = bodyParser.json();
+var i = 9;
 
 var Player = require('../database/models/Player.js');
 
